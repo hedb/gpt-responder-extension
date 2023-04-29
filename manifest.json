@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "Gmail Responder 2",
+  "version": "1.0",
+  "options_page": "options.html",
+  "permissions": [
+    "https://mail.google.com/*",
+    "https://inbox.google.com/*",
+    "storage"
+  ],
+  "content_scripts" : [
+    {
+      "matches": ["https://mail.google.com/*", "https://inbox.google.com/*"],
+      "js": ["inboxsdk.js", "myapp.js", "options.js"]
+    }
+  ]
+}
