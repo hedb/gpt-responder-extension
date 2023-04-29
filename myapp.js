@@ -24,7 +24,7 @@ async function fetchAnswer(question) {
 
     const body = JSON.stringify({
         model: "gpt-3.5-turbo",
-        messages: [{"role": "user", "content": "Say this is a test!"}],
+        messages: [{"role": "user", "content": question}],
         temperature: 0.7,
         n: 1
     });
@@ -35,12 +35,6 @@ async function fetchAnswer(question) {
     return data.choices[0].message.content.trim();
   };
 
-  async function buttonClick(event) {
-    // debugger
-    question = "what is the time?"
-    const answer = await fetchAnswer(question);
-    event.composeView.insertTextIntoBodyAtCursor( answer );
-  };
 
 
   async function loadPrompts() {
@@ -65,7 +59,7 @@ async function fetchAnswer(question) {
       button.style.display = 'block';
       button.style.marginBottom = '5px';
       button.addEventListener('click', () => {
-        handleButtonClick(item.prompt);
+        handleButtonClick(menu,item.prompt);
       });
       menu.appendChild(button);
     }
@@ -73,10 +67,14 @@ async function fetchAnswer(question) {
     return menu;
   }
   
-  function handleButtonClick(prompt) {
-    // Function that will be called with the corresponding prompt value
-    console.log('Button clicked with prompt:', prompt);
-    // Your code to handle the button click with the prompt
+
+  async function handleButtonClick(menu,prompt) {
+    email_content = menu.composeView.getSelectedBodyText();
+    prompt = prompt + email_content;
+    console.log('Button clicked with prompt:', prompt );
+    var answer = await fetchAnswer(prompt);
+    answer = answer.replaceAll('\n','\n<br/>');
+    menu.composeView.setBodyHTML( answer );
   }
 
   
@@ -92,23 +90,16 @@ async function fetchAnswer(question) {
   initialize_menu();
 
   async function testClick(event) {
-
-    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-    menu.style.left = `${event.pageX}px`;
-    menu.style.top = `${event.pageY}px`;
-
-    // debugger
-    // console.log(event.composeView.getSelectedBodyText());
-
+    debugger
+    console.log(event.composeView.getSelectedBodyText());
   };
   
   function showMenu(event, buttonElement) {
     const buttonRect = buttonElement.getBoundingClientRect();
     menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
     menu.style.left = `${buttonRect.left}px`;
-    menu.style.top = `${buttonRect.top}px`;
-    // menu.style.left = `0px`;
-    // menu.style.top = `0px`;
+    menu.style.top = `${buttonRect.bottom}px`;
+    menu.composeView = event.composeView;
   }
 
 
@@ -118,25 +109,21 @@ InboxSDK.load(2, 'sdk_GmailResponder_71b9f89d6b').then(function(sdk){
     composeView.addButton({
       title: "Ask the GPT",
       iconUrl: 'https://chat.openai.com/favicon-32x32.png',
-      onClick : buttonClick,
-    });
-  });
-
-
-  sdk.Compose.registerComposeViewHandler(function(composeView){
-
-    composeView.addButton({
-      title: "Test",
-      iconUrl: 'https://www.clipartmax.com/png/small/266-2660182_custom-solutions-favicon-32x32-gear.png',
-      // onClick : testClick,
       onClick: (event) => {
-        // const buttonElement = event.getButtonElement(); 
-        
         const buttonElement = event.composeView.getElement();
-
         showMenu(event, buttonElement); // Pass the button element to the showMenu function
       }
     });
   });
+
+
+  // sdk.Compose.registerComposeViewHandler(function(composeView){
+
+  //   composeView.addButton({
+  //     title: "Test",
+  //     iconUrl: 'https://www.clipartmax.com/png/small/266-2660182_custom-solutions-favicon-32x32-gear.png',
+  //     onClick : testClick      
+  //   });
+  // });
 
 });
