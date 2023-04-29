@@ -2,12 +2,47 @@
 <html>
   <head>
     <title>GMail Responder</title>
+
+
+    <link rel="stylesheet" href="json-formatter.css" />
+
+    <script src="json-formatter.umd.js"></script>
     <script src="options.js"></script>
+
+
+    <style>
+      #jsonDisplay .json-formatter-row {
+        font-size: 1.25em; /* Adjust the font size as needed */
+      }
+
+
+      #jsonDisplay {
+        max-width: 40ch; /* Adjust the width based on the desired character limit */
+        overflow-wrap: anywhere;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+      }
+
+    </style>
+
   </head>
   <body>
     <h1>GMail Responder</h1>
     <label for="apiKey">API Key:</label>
     <input type="text" id="apiKey" />
     <button id="saveButton">Save</button>
+
+
+    <br><br>
+
+    <div id="jsonDisplay"></div>
+    <br/>
+    <label for="jsonTextArea">Prompts JSON:</label>
+    <br>
+    <textarea id="jsonTextArea" rows="10" cols="50"></textarea>
+    <br>
+    <button id="saveJsonButton">Save JSON</button>
+
+
   </body>
 </html>

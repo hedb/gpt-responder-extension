@@ -1,0 +1,10 @@
+[
+    {
+        "ux_path"   :   "gmail/cold_calls/no",
+        "prompt"    :   "Following is a cold call email sent to me. I want you to phrase an answer that politely decline any interest in the product. Please start without the subject line, and also use my name in the signature (taken from the email). Email text: "
+    },
+    {
+        "ux_path"   :   "gmail/cold_calls/yes",
+        "prompt"    :   "Following is a cold call email sent to me. I want you to phrase an answer that politely show interest in the offer. Please start without the subject line, and also use my name in the signature (taken from the email). Email text: "
+    }
+]

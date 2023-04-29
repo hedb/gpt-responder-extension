@@ -7,7 +7,7 @@ chrome.storage.sync.get('apiKey', (data) => {
   
     if (apiKey) {
       // Use the API key in your content script logic
-      console.log('API key:', apiKey);
+      console.log('API key found');
     } else {
       console.log('No API key found');
     }
@@ -42,6 +42,76 @@ async function fetchAnswer(question) {
     event.composeView.insertTextIntoBodyAtCursor( answer );
   };
 
+
+  async function loadPrompts() {
+    const response = await fetch(chrome.runtime.getURL('prompts.json'));
+    const prompts = await response.json();
+    return prompts;
+  }
+  
+  function createMenu(prompts) {
+    const menu = document.createElement('div');
+    menu.id = 'my-extension-menu';
+    menu.style.display = 'none';
+    menu.style.position = 'absolute';
+    menu.style.backgroundColor = 'white';
+    menu.style.border = '1px solid #ccc';
+    menu.style.padding = '10px';
+    menu.style.zIndex = '1000';
+  
+    for (const item of prompts) {
+      const button = document.createElement('button');
+      button.textContent = item.ux_path;
+      button.style.display = 'block';
+      button.style.marginBottom = '5px';
+      button.addEventListener('click', () => {
+        handleButtonClick(item.prompt);
+      });
+      menu.appendChild(button);
+    }
+    menu.style.zIndex = '10000'; 
+    return menu;
+  }
+  
+  function handleButtonClick(prompt) {
+    // Function that will be called with the corresponding prompt value
+    console.log('Button clicked with prompt:', prompt);
+    // Your code to handle the button click with the prompt
+  }
+
+  
+  var prompts = null;
+  var menu = null;
+
+  async function initialize_menu() {
+    prompts = await loadPrompts();
+    menu = createMenu(prompts);
+    document.body.appendChild(menu);
+  }
+
+  initialize_menu();
+
+  async function testClick(event) {
+
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    menu.style.left = `${event.pageX}px`;
+    menu.style.top = `${event.pageY}px`;
+
+    // debugger
+    // console.log(event.composeView.getSelectedBodyText());
+
+  };
+  
+  function showMenu(event, buttonElement) {
+    const buttonRect = buttonElement.getBoundingClientRect();
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    menu.style.left = `${buttonRect.left}px`;
+    menu.style.top = `${buttonRect.top}px`;
+    // menu.style.left = `0px`;
+    // menu.style.top = `0px`;
+  }
+
+
 InboxSDK.load(2, 'sdk_GmailResponder_71b9f89d6b').then(function(sdk){
 
   sdk.Compose.registerComposeViewHandler(function(composeView){
@@ -51,4 +121,22 @@ InboxSDK.load(2, 'sdk_GmailResponder_71b9f89d6b').then(function(sdk){
       onClick : buttonClick,
     });
   });
+
+
+  sdk.Compose.registerComposeViewHandler(function(composeView){
+
+    composeView.addButton({
+      title: "Test",
+      iconUrl: 'https://www.clipartmax.com/png/small/266-2660182_custom-solutions-favicon-32x32-gear.png',
+      // onClick : testClick,
+      onClick: (event) => {
+        // const buttonElement = event.getButtonElement(); 
+        
+        const buttonElement = event.composeView.getElement();
+
+        showMenu(event, buttonElement); // Pass the button element to the showMenu function
+      }
+    });
+  });
+
 });

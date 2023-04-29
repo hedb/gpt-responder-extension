@@ -13,5 +13,6 @@
       "matches": ["https://mail.google.com/*", "https://inbox.google.com/*"],
       "js": ["inboxsdk.js", "myapp.js", "options.js"]
     }
-  ]
+  ],
+  "web_accessible_resources": ["prompts.json"]
 }
